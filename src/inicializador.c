@@ -7,8 +7,7 @@
 int main(int argc, char *argv[])
 {
     if(argc != 3){
-        //printf("El resultado de la suma es :%f\n", suma (a, b));
-        printf("Uso incorrecto del llamado\n");
+        printf("Numero incorrecto de argumentos. Introducir Nombre y Tamano del Buffer\n");
         exit(0);
     }
 
@@ -19,7 +18,7 @@ int main(int argc, char *argv[])
 
 
     if(sizeBuffer == 0){
-        printf("Tamano de Buffer invalido. Debe ser un entero.\n");
+        printf("Tamano de Buffer invalido. Debe ser un numero entero.\n");
         exit(0);
     }
 
