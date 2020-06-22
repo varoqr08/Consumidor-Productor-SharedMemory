@@ -4,9 +4,18 @@
 #include <unistd.h>
 #include <sys/sem.h>
 #include <string.h>
+#include <semaphore.h>
+#include <struct.h>
 
 int main(int argc, char *argv[])
 {
+    int id_memory;
+
+    key_t key_global;
+    int gv_shm_id;
+    global_variables *memory2 = NULL;
+
+
     //Validacion de argumentos
     if(argc != 3){
         printf("Numero incorrecto de argumentos. Introducir Nombre y Tamano del Buffer\n");
@@ -23,12 +32,8 @@ int main(int argc, char *argv[])
 
     printf("Nombre: %s \n", nameBuffer);
     printf("Tamano: %i \n", sizeBuffer);
-
-    //Inicializacion de memoria
-    key_t key;
-    key = ftok(nameBuffer, 33);
-
-    printf("Llave: %i \n", key);
+    
+    
 
     return 0;
 }
