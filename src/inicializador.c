@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    if (create_buffer(&id_memory, key, nameBuffer) == 0)
+    if (create_buffer(&id_memory, key, sizeBuffer) == 0)
     {
         printf("Can't create buffer memory\n");
         exit(0);

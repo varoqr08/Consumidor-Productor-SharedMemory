@@ -5,7 +5,7 @@ APP1=inicializador
 
 CC=gcc
 ROUTE=../bin/
-FLAGS=-L../lib -I../include -laux -lm
+FLAGS=-L../lib -I../include -lm -lmem -lsemaphore -laux
 #FLAGS2=-L../lib -I../include -lm -lshmem -lsemaphore -lutilities
 
 BIN1=$(ROUTE)$(APP1)
