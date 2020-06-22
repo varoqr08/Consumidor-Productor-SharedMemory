@@ -38,8 +38,9 @@ int main(int argc, char *argv[])
     /////////////////////////////////////////////////////////////////////////
 
     /* Check and init directories */
-    create_dirs(nameBuffer);
-
+    create_dirs(nameBuffer);    
+    
+    
     /* Shared Memory Buffer Initialization */
     char *key_route;
     if (check_bin_dir())
@@ -51,9 +52,10 @@ int main(int argc, char *argv[])
         key_route = concat("share_files/", nameBuffer);
     }
 
-    check_dir(key_route);
+    /* check_dir(key_route); */   //Esta línea revisa que la llave de ruta esté en el mismo path que los dir creados
 
     key = ftok(key_route, 33);
+
     if (key == -1)
     {
         printf("Buffer Key is Invalid\n");

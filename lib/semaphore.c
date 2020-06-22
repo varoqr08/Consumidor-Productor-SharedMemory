@@ -14,7 +14,7 @@ union semun {
 #endif
 
 /* Init and returns semaphore id */
-int init_semaphore(char *buff_name, int buffer_size)
+int init_semaphore(char *buff_name, int sizeBuffer)
 {
   key_t key;
   int id_semaphore;
@@ -28,7 +28,7 @@ int init_semaphore(char *buff_name, int buffer_size)
     exit(0);
   }
 
-  id_semaphore = semget(key, buffer_size, 0600);
+  id_semaphore = semget(key, sizeBuffer, 0600);
 
   if (id_semaphore == -1)
   {
@@ -43,7 +43,7 @@ int init_semaphore(char *buff_name, int buffer_size)
 }
 
 /* Create semaphores and initializes it in UP */
-void create_semaphore(char *route, int buffer_size)
+void create_semaphore(char *route, int sizeBuffer)
 {
   key_t key_semaphore;
   int id_semaphore;
@@ -56,7 +56,7 @@ void create_semaphore(char *route, int buffer_size)
     exit(0);
   }
 
-  id_semaphore = semget(key_semaphore, buffer_size, 0600 | IPC_CREAT);
+  id_semaphore = semget(key_semaphore, sizeBuffer, 0600 | IPC_CREAT);
 
   if (id_semaphore == -1)
   {
@@ -69,7 +69,7 @@ void create_semaphore(char *route, int buffer_size)
   operation.sem_op = 1;
   operation.sem_flg = 0;
 
-  for (int i = 0; i < buffer_size; ++i)
+  for (int i = 0; i < sizeBuffer; ++i)
   {
     operation.sem_num = i;
 
