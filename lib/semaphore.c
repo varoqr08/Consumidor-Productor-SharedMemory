@@ -10,11 +10,11 @@
 
 struct sembuf operation;
 /**
- * Creates a semaphore 
- * char* buffer --> key path
- * int identifier --> identifier
- * int sem_num --> number of semaphores
- * int init_val --> initial value of the set of semaphores, 0 is red and 1 is green
+ * Creacion del semaphore 
+ * char* buffer --> key 
+ * int identifier --> identificador
+ * int sem_num --> semaforos por crear
+ * int init_val --> Valor inicial, 0 is rojo y 1 verde
  * Example: sem_create("../bin/ls",33, 10,1);
 */
 int sem_create(char *buffer, int identifier, int sem_num, int init_val) {
@@ -36,22 +36,19 @@ int sem_create(char *buffer, int identifier, int sem_num, int init_val) {
 
     key = ftok(buffer, identifier);
 
-    if (key == -1)
-    {
-        printf("Can't get semaphore key\n");
+    if (key == -1){
+        printf("No se pudo obtener la llave del semaforo\n");
         exit(0);
     }
 
     id = semget(key, sem_num, 0600 | IPC_CREAT);
 
-    if (id == -1)
-    {
-        printf("Can't create semaphore\n");
+    if (id == -1){
+        printf("No se pudo crear el semaforo\n");
         exit(0);
     }
 
-    for (int i = 0; i <= sem_num; i++)
-    {
+    for (int i = 0; i <= sem_num; i++){
       arg.val = init_val;
       semctl(id,i, SETVAL, arg);
     } 
@@ -62,22 +59,21 @@ int sem_create(char *buffer, int identifier, int sem_num, int init_val) {
 }
 
 /**
- * Erase a set semaphore 
- * int id --> id of the set of semaphores
+ * Funcion para borrar un semaforo
+ * int id --> id del set de semaforos
 */
 void sem_erase(int id) {
     semctl(id, 2, IPC_RMID, NULL);
-    if (errno == EINVAL)
-    {
-        printf("Can't erase semaphore\n");
+    if (errno == EINVAL){
+        printf("No se pudo borrar el semaforo\n");
     }
 }
 
 /**
- * Open an existing semaphore 
- * char* buffer --> key path
- * int identifier --> identifier
- * int sem_num --> number of semaphores
+ * Funcion para abrir un semaforo existente
+ * char* buffer --> key 
+ * int identifier --> identificador
+ * int sem_num --> numero de semaforos
  * Example: sem_open("../bin/ls",33, 10);
 */
 
@@ -99,17 +95,15 @@ int sem_open(char *buffer, int identifier, int sem_num) {
 
     key = ftok(buffer, identifier);
 
-    if (key == -1)
-    {
-        printf("Can't get semaphore key in open_sem\n");
+    if (key == -1){
+        printf("No se pudo obtener la llave de en open_sem\n");
         exit(0);
     }
 
     id = semget(key, sem_num, 0600);
 
-    if (id == -1)
-    {
-        printf("Can't create semaphore in open_sem\n");
+    if (id == -1){
+        printf("No se pudo crear semaforo en open_sem\n");
         exit(0);
     }
 
@@ -120,8 +114,8 @@ int sem_open(char *buffer, int identifier, int sem_num) {
 
 /**
  * Up operation 
- * int id --> id of the set of semaphores
- * int num --> number of the especific semaphore
+ * int id --> id del set se semaforos
+ * int num --> numero especifico del semaforo
  * Example: sem_up(sem1,0);
 */
 void sem_up(int id, int num) {
@@ -133,8 +127,8 @@ void sem_up(int id, int num) {
 }
 /**
  * Down operation 
- * int id --> id of the set of semaphores
- * int num --> number of the especific semaphore
+ * int id --> id del set se semaforos
+ * int num --> umero especifico del semaforo
  * Example: sem_down(sem1,0);
 */
 void sem_down(int id, int num) {

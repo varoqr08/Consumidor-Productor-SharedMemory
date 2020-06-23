@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
 
     //Verifica que ingresen todos los argumentos esperados.
     if(argc != 3){
-        printf("Numero incorrecto de argumentos. Introducir Nombre y Tamano del Buffer\n");
+        printf("Numero incorrecto de argumentos. Introducir Nombre y Tamaño del Buffer\n");
         exit(0);
     }
     
@@ -24,13 +24,13 @@ int main(int argc, char *argv[]){
 
     //Verfica que el tamano del buffer sea un valor valido.
     if(sizeBuffer <= 0){
-        printf("Tamano de Buffer invalido. Debe ser positivo y diferente de cero.\n");
+        printf("Tamaño de Buffer invalido. Debe ser positivo y diferente de cero.\n");
         exit(0);
     }
 
     //Verifica que el tamaño del buffer sea un numero.
     if (!isNumber(argv[2])){
-        printf("Tamano de Buffer invalido. Debe ser un numero entero.\n");
+        printf("Tamaño de Buffer invalido. Debe ser un numero entero.\n");
         exit(0);
     }
 
