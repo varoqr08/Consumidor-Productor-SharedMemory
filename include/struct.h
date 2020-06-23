@@ -8,17 +8,20 @@ typedef struct
   int producers;
   int consumers;
   int size;
-  int kill;
+  int id;
+  int end;
 } global_variables;
 
 
 //Estructura para cada mensaje a enviar//
 typedef struct
 {
+  int active;
   int pid;
   int magic_number;
   char date[50];
   char hour[50];
+  char text[50];
 } message;
 
 #endif

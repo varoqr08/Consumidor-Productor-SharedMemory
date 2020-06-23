@@ -1,79 +1,47 @@
+#include <stdio.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
 #include "../include/mem.h"
 
-/* Creates the buffer for shared memory */
-int create_buffer(int *id, key_t mem_key, int mem_size)
-{
-  *id = shmget(mem_key, sizeof(message) * mem_size, 0777 | IPC_CREAT);
-  if (*id == -1)
-  {
-    printf("Error en el get del buffer\n");
-    return 0;
-  }
+#define ARRAY_SIZE   4000
+#define MALLOC_SIZE 10000
+#define SHM_SIZE    10000
+#define SHM_MODE    (SHM_R | SHM_W)     /* read/write */
 
-  return 1;
+/*    Creacion de la memoria compartida.
+*    - El manejador de memoria es interno
+*    - Manda mensajes de error por salida de error estandar.
+*/
+int crearMemoria(int *shmid, key_t key, int size, message **Memoria){
+  if ((*shmid = shmget(key, sizeof(message)*size, 0777 | IPC_CREAT)) < 0) {
+    printf("Error de shmget() en el buffer\n");
+    return 1;
+   } 
+   if ((*Memoria=( message *)shmat(*shmid, (char *)0, 0)) == (void *) -1) {
+    printf("Error de shmat() en el buffer\n");
+    return 1;
+   }
+   return 0;
 }
 
-/* Returns the buffer id for shared memory */
-int get_buffer(int *id, key_t mem_key, int mem_size)
-{
-  *id = shmget(mem_key, sizeof(message) * mem_size, 0777);
-  if (*id == -1)
-  {
-    printf("Error en el get del buffer\n");
-    return 0;
-  }
-
-  return 1;
-}
-
-/* Returns the buffer memory for shared memory */
-int get_buffer_memory(int *id, message **memory)
-{
-  *memory = (message *)shmat(*id, (char *)0, 0);
-  if (*memory == NULL)
-  {
-    printf("Error en el mat del buffer\n");
-    return 0;
-  }
-
-  return 1;
-}
-
-/* Creates the global variables for shared memory */
-int create_global(int *id, key_t mem_key)
-{
-  *id = shmget(mem_key, 1 * sizeof(global_variables), 0777 | IPC_CREAT);
-  if (*id == -1)
-  {
-    printf("Error en el get del buffer\n");
-    return 0;
-  }
-
-  return 1;
-}
-
-/* Returns the global variables id for shared memory */
-int get_global(int *id, key_t mem_key)
-{
-  *id = shmget(mem_key, 1 * sizeof(global_variables), 0777);
-  if (*id == -1)
-  {
-    printf("Error en el get del buffer\n");
-    return 0;
-  }
-
-  return 1;
-}
-
-/* Returns the global variables memory for shared memory */
-int get_global_memory(int *id, global_variables **memory)
-{
-  *memory = (global_variables *)shmat(*id, (char *)0, 0);
-  if (*memory == NULL)
-  {
-    printf("Error en el mat del buffer\n");
-    return 0;
-  }
-
-  return 1;
+/* Creacion de la memoria compartida para variables globales */
+int globalMemory(global_variables **memoria){
+  int shmid;
+  key_t key = ftok ("/bin/ls", 33);
+	if (key == -1){
+		printf("Error en la clave de las variables globales\n");
+		return 1;
+	}
+  if ((shmid=shmget(key, sizeof(global_variables), 0777 | IPC_CREAT))<0) {
+    printf("Error de shmget() en el buffer de las variables globales\n");
+    return 1;
+   } 
+   if ((*memoria=( global_variables *)shmat(shmid, (char *)0, 0)) == (void *) -1) {
+    printf("Error de shmat() en el buffer de las variables globales\n");
+    return 1;
+   }
+   return 0;
 }

@@ -9,109 +9,83 @@
 #include <aux.h>
 #include <mem.h>
 
-int main(int argc, char *argv[])
-{
-    int id_memory;
-    key_t key;
-    key_t key_global;
-    int gv_shm_id;
-    global_variables *memory2 = NULL;
+int main(int argc, char *argv[]){
 
+    /*Validacion de argumentos*/
 
-    //Validacion de argumentos
+    //Verifica que ingresen todos los argumentos esperados.
     if(argc != 3){
         printf("Numero incorrecto de argumentos. Introducir Nombre y Tamano del Buffer\n");
         exit(0);
     }
-
+    
     char *nameBuffer = argv[1];
     int sizeBuffer = atoi(argv[2]);
 
+    //Verfica que el tamano del buffer sea un valor valido.
     if(sizeBuffer <= 0){
+        printf("Tamano de Buffer invalido. Debe ser positivo y diferente de cero.\n");
+        exit(0);
+    }
+
+    //Verifica que el tamaño del buffer sea un numero.
+    if (!isNumber(argv[2])){
         printf("Tamano de Buffer invalido. Debe ser un numero entero.\n");
         exit(0);
     }
 
+    //Imprime argumentos validos en consola.
     printf("Nombre: %s \n", nameBuffer);
-    printf("Tamano: %i \n", sizeBuffer);
+    printf("Tamaño: %i \n", sizeBuffer);
+
+    //Creacion de directorios.
+    char *dir = "buffers";
+    check_dir(dir);
+
+    char *dir_name = concat("buffers/", nameBuffer);
+    check_dir(dir_name);
+
+    //Creacion de llaves.
+    key_t key = ftok(dir_name, 's');
+
+    if(key == -1){
+        printf("Error en la creacion de la llave");
+        exit(0);
+    }
+
+    //Creacion de la memoria.
+    int mem_id;
+    message *memoria = NULL;
+    if (crearMemoria(&mem_id, key, sizeBuffer, &memoria)){
+        printf("Error al crear la memoria");
+        exit(0);
+    }else{
+        printf("Se generó el buffer %s de tamaño %d correctamente\n", nameBuffer, sizeBuffer);
+    }
+
+    //Creacion de memoria para variables globales.
+    global_variables *memoriaGlobal = NULL;
+    if(globalMemory(&memoriaGlobal)){
+        printf("Error en variables globales.\n");
+        exit(0);
+    }
+
+    memoriaGlobal[0].producers = 0;
+    memoriaGlobal[0].consumers = 1;
+    memoriaGlobal[0].size = sizeBuffer;
+    memoriaGlobal[0].id = mem_id;
+    memoriaGlobal[0].end = 0;
+
+    /*Inicializacion de Memoria*/
     
-    /////////////////////////////////////////////////////////////////////////
+    for (int i = 0; i < sizeBuffer; i++){
+        memoria[0].active = 0;
+        memoria[0].pid = 0;
+        memoria[0].magic_number = 0;
+        strcpy(memoria[0].date, "");
+        strcpy (memoria[0].hour, "");
+        strcpy (memoria[0].text, "");
+    }   
 
-    /* Check and init directories */
-    create_dirs(nameBuffer);    
-    
-    
-    /* Shared Memory Buffer Initialization */
-    char *key_route;
-    if (check_bin_dir())
-    {
-        key_route = concat("../share_files/", nameBuffer);
-    }
-    else
-    {
-        key_route = concat("share_files/", nameBuffer);
-    }
-
-    /* check_dir(key_route); */   //Esta línea revisa que la llave de ruta esté en el mismo path que los dir creados
-
-    key = ftok(key_route, 33);
-
-    if (key == -1)
-    {
-        printf("Buffer Key is Invalid\n");
-        exit(0);
-    }
-
-    if (create_buffer(&id_memory, key, sizeBuffer) == 0)
-    {
-        printf("Can't create buffer memory\n");
-        exit(0);
-    }
-
-    /* Shared Memory for Global Variables Initialization */
-    if (check_bin_dir())
-    {
-        key_global = ftok("../share_files/global", 33);
-    }
-    else
-    {
-        key_global = ftok("share_files/global", 33);
-    }
-
-    if (key_global == -1)
-    {
-        printf("Global Variables Key is Invalid\n");
-        exit(0);
-    }
-
-    if (create_global(&gv_shm_id, key_global) == 0)
-    {
-        printf("Can't create global memory\n");
-        exit(0);
-    }
-
-    if (get_global_memory(&gv_shm_id, &memory2) == 0)
-    {
-        printf("Can't get global memory\n");
-        exit(0);
-    }
-
-    memory2->size = sizeBuffer;
-
-    /* Create Semaphore */
-
-    if (check_bin_dir())
-    {
-        create_semaphore("../share_files/sem", sizeBuffer);
-    }
-    else
-    {
-        create_semaphore("share_files/sem", sizeBuffer);
-    }
-
-
-
-
-
-    return 0;
+    //Deberia estar lo de los semaforos (?)
 }

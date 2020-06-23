@@ -1,78 +1,158 @@
-#include <sys/sem.h>
+#include <sys/shm.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
+#include <sys/sem.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <string.h>
+#include <errno.h>
 
+struct sembuf operation;
+/**
+ * Creates a semaphore 
+ * char* buffer --> key path
+ * int identifier --> identifier
+ * int sem_num --> number of semaphores
+ * int init_val --> initial value of the set of semaphores, 0 is red and 1 is green
+ * Example: sem_create("../bin/ls",33, 10,1);
+*/
+int sem_create(char *buffer, int identifier, int sem_num, int init_val) {
 #if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
 // The union is already defined in sys/sem.h
 #else
-union semun {
-  int val;
-  struct semid_ds *buf;
-  unsigned short int *array;
-  struct seminfo *__buf;
-};
+    union semun {
+        int val;
+        struct semid_ds *buf;
+        unsigned short int *array;
+        struct seminfo *__buf;
+    };
 #endif
 
-/* Init and returns semaphore id */
-int init_semaphore(char *buff_name, int sizeBuffer)
-{
-  key_t key;
-  int id_semaphore;
-  union semun arg;
+    
+    union semun arg;
+    int id;
+    key_t key;
 
-  key = ftok(buff_name, 33);
+    key = ftok(buffer, identifier);
 
-  if (key == -1)
-  {
-    printf("Can't get semaphore key\n");
-    exit(0);
-  }
+    if (key == -1)
+    {
+        printf("Can't get semaphore key\n");
+        exit(0);
+    }
 
-  id_semaphore = semget(key, sizeBuffer, 0600);
+    id = semget(key, sem_num, 0600 | IPC_CREAT);
 
-  if (id_semaphore == -1)
-  {
-    printf("Can't create semaphore\n");
-    exit(0);
-  }
+    if (id == -1)
+    {
+        printf("Can't create semaphore\n");
+        exit(0);
+    }
 
-  arg.val = 0;
-  semctl(id_semaphore, 0, SETVAL, &arg);
+    for (int i = 0; i <= sem_num; i++)
+    {
+      arg.val = init_val;
+      semctl(id,i, SETVAL, arg);
+    } 
 
-  return id_semaphore;
+    operation.sem_flg = 0;
+
+    return id;
 }
 
-/* Create semaphores and initializes it in UP */
-void create_semaphore(char *route, int sizeBuffer)
-{
-  key_t key_semaphore;
-  int id_semaphore;
+/**
+ * Erase a set semaphore 
+ * int id --> id of the set of semaphores
+*/
+void sem_erase(int id) {
+    semctl(id, 2, IPC_RMID, NULL);
+    if (errno == EINVAL)
+    {
+        printf("Can't erase semaphore\n");
+    }
+}
 
-  key_semaphore = ftok(route, 33);
+/**
+ * Open an existing semaphore 
+ * char* buffer --> key path
+ * int identifier --> identifier
+ * int sem_num --> number of semaphores
+ * Example: sem_open("../bin/ls",33, 10);
+*/
 
-  if (key_semaphore == -1)
-  {
-    printf("Can't get semaphore key\n");
-    exit(0);
-  }
+int sem_open(char *buffer, int identifier, int sem_num) {
+#if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
+// The union is already defined in sys/sem.h
+#else
+    union semun {
+        int val;
+        struct semid_ds *buf;
+        unsigned short int *array;
+        struct seminfo *__buf;
+    };
+#endif
 
-  id_semaphore = semget(key_semaphore, sizeBuffer, 0600 | IPC_CREAT);
+    //union semun arg;
+    int id;
+    key_t key;
 
-  if (id_semaphore == -1)
-  {
-    printf("Can't create semaphore\n");
-    exit(0);
-  }
+    key = ftok(buffer, identifier);
 
-  struct sembuf operation;
+    if (key == -1)
+    {
+        printf("Can't get semaphore key in open_sem\n");
+        exit(0);
+    }
 
-  operation.sem_op = 1;
-  operation.sem_flg = 0;
+    id = semget(key, sem_num, 0600);
 
-  for (int i = 0; i < sizeBuffer; ++i)
-  {
-    operation.sem_num = i;
+    if (id == -1)
+    {
+        printf("Can't create semaphore in open_sem\n");
+        exit(0);
+    }
 
-    semop(id_semaphore, &operation, 1);
-  }
+    operation.sem_flg = 0;
+
+    return id;
+}
+
+/**
+ * Up operation 
+ * int id --> id of the set of semaphores
+ * int num --> number of the especific semaphore
+ * Example: sem_up(sem1,0);
+*/
+void sem_up(int id, int num) {
+    struct sembuf operation;
+
+    operation.sem_num = num;
+    operation.sem_op = 1;
+    semop(id, &operation, 1);
+}
+/**
+ * Down operation 
+ * int id --> id of the set of semaphores
+ * int num --> number of the especific semaphore
+ * Example: sem_down(sem1,0);
+*/
+void sem_down(int id, int num) {
+    struct sembuf operation;
+
+    operation.sem_num = num;
+    operation.sem_op = -1;
+    semop(id, &operation, 1);
+}
+
+/**
+ * Get the value of the especific semaphore 
+ * int id --> id of the set of semaphores
+ * int num --> number of the especific semaphore
+ * Example: sem_get_value(sem1,0);
+*/
+int sem_get_value(int id, int num) {
+    int value;
+    value = semctl(id, num, GETVAL, 0);
+    return value;
 }

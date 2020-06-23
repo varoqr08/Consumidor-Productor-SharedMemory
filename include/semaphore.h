@@ -2,8 +2,13 @@
 #ifndef _SEMAPHORE_H
 #define _SEMAPHORE_H
 
-int init_semaphore(char *buff_name, int sizeBuffer);
-void create_semaphore(char *route, int sizeBuffer);
+
+int sem_create(char *buffer, int identifier, int sem_num, int init_val);
+void sem_erase(int id);
+int sem_open(char *buffer, int identifier, int sem_num);
+void sem_up(int id, int num);
+void sem_down(int id, int num);
+int sem_get_value(int id, int num);
 
  
 #endif
