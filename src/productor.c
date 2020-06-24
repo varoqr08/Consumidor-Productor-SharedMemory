@@ -72,7 +72,35 @@ int main(int argc, char *argv[]){
         exit(0);
     }
 
+    //Abrir los semaforos
+    char *dir_name = concat("buffers/", nameBuffer);
+    int semMem, semVacio, semLleno;
+    semMem = abrirSem(dir_name, 1, 1);
+    semVacio = abrirSem(dir_name, 2, 1);
+    semLleno = abrirSem(dir_name, 3, 1);
 
+    printf("SemLleno %i \n", semLleno);
+    printf("SemVAcio %i \n", semVacio);
+    printf("SemMem %i \n", semMem);
+
+    borrarSem(semMem);
+    borrarSem(semVacio);
+    borrarSem(semLleno);
+
+/* ipcs -s - Ver Semaforos */
+/* ipcrm -s 0 - Borrar Semaforo con id 0 */
+
+
+/*
+while(1){
+    float m = ran_expo(time);
+    printf("Espera de: %f \n",m);
+    sleep(m);
+    
+
+for(int i=1; i <=semVacio; i++){
+    borrarSem(i);
+}}*/
 }
 
 /*Generacion de números aleatorios a partir de una distribución exponencial

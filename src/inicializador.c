@@ -107,5 +107,4 @@ int main(int argc, char *argv[]){
         strcpy (memoria[i].text, "");
     }   
 
-    //Deberia estar lo de los semaforos (?)
 }

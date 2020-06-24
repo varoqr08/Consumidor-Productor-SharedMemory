@@ -66,6 +66,8 @@ void borrarSem(int id) {
     semctl(id, 2, IPC_RMID, NULL);
     if (errno == EINVAL){
         printf("No se pudo borrar el semaforo\n");
+    }else{
+        printf("Semaforo cerrado %d\n", id);
     }
 }
 
@@ -96,14 +98,14 @@ int abrirSem(char *buffer, int identifier, int sem_num) {
     key = ftok(buffer, identifier);
 
     if (key == -1){
-        printf("No se pudo obtener la llave de en open_sem\n");
+        printf("No se pudo obtener la llave en abrirSem\n");
         exit(0);
     }
 
     id = semget(key, sem_num, 0600);
 
     if (id == -1){
-        printf("No se pudo crear semaforo en open_sem\n");
+        printf("No se pudo abrir el semaforo en abrirSem\n");
         exit(0);
     }
 
