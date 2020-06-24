@@ -17,7 +17,7 @@ struct sembuf operation;
  * int init_val --> Valor inicial, 0 is rojo y 1 verde
  * Example: sem_create("../bin/ls",33, 10,1);
 */
-int sem_create(char *buffer, int identifier, int sem_num, int init_val) {
+int crearSem(char *buffer, int identifier, int sem_num, int init_val) {
 #if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
 // The union is already defined in sys/sem.h
 #else
@@ -62,7 +62,7 @@ int sem_create(char *buffer, int identifier, int sem_num, int init_val) {
  * Funcion para borrar un semaforo
  * int id --> id del set de semaforos
 */
-void sem_erase(int id) {
+void borrarSem(int id) {
     semctl(id, 2, IPC_RMID, NULL);
     if (errno == EINVAL){
         printf("No se pudo borrar el semaforo\n");
@@ -77,7 +77,7 @@ void sem_erase(int id) {
  * Example: sem_open("../bin/ls",33, 10);
 */
 
-int sem_open(char *buffer, int identifier, int sem_num) {
+int abrirSem(char *buffer, int identifier, int sem_num) {
 #if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
 // The union is already defined in sys/sem.h
 #else
@@ -118,7 +118,7 @@ int sem_open(char *buffer, int identifier, int sem_num) {
  * int num --> numero especifico del semaforo
  * Example: sem_up(sem1,0);
 */
-void sem_up(int id, int num) {
+void verdeSem(int id, int num) {
     struct sembuf operation;
 
     operation.sem_num = num;
@@ -131,7 +131,7 @@ void sem_up(int id, int num) {
  * int num --> umero especifico del semaforo
  * Example: sem_down(sem1,0);
 */
-void sem_down(int id, int num) {
+void rojoSem(int id, int num) {
     struct sembuf operation;
 
     operation.sem_num = num;

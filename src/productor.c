@@ -10,6 +10,8 @@
 #include <mem.h>
 #include <math.h>
 
+double ran_expo(double lambda);
+
 int main(int argc, char *argv[]){
 
     //Validacion de argumentos
@@ -28,6 +30,8 @@ int main(int argc, char *argv[]){
 
     printf("Nombre: %s \n", nameBuffer);
     printf("Tamano: %f \n", time);
+
+    printf("%f\n", ran_expo(0.05));
 
     /////////////////////////////////////////////////////////////////////////
 

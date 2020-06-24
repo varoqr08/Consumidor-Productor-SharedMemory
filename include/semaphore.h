@@ -3,11 +3,11 @@
 #define _SEMAPHORE_H
 
 
-int sem_create(char *buffer, int identifier, int sem_num, int init_val);
-void sem_erase(int id);
-int sem_open(char *buffer, int identifier, int sem_num);
-void sem_up(int id, int num);
-void sem_down(int id, int num);
+int crearSem(char *buffer, int identifier, int sem_num, int init_val);
+void borrarSem(int id);
+int abrirSem(char *buffer, int identifier, int sem_num);
+void verdeSem(int id, int num);
+void rojoSem(int id, int num);
 int sem_get_value(int id, int num);
 
  

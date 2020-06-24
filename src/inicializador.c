@@ -76,15 +76,19 @@ int main(int argc, char *argv[]){
     memoriaGlobal[0].id = mem_id;
     memoriaGlobal[0].end = 0;
 
-    /*Inicializacion de Memoria*/
+    //Inicializacion de los Semaforos
+    int sem1;
+    sem1 = crearSem(dir_name, 33, 1, 1);
+
+    //Inicializacion de Memoria//
     
     for (int i = 0; i < sizeBuffer; i++){
-        memoria[0].active = 0;
-        memoria[0].pid = 0;
-        memoria[0].magic_number = 0;
-        strcpy(memoria[0].date, "");
-        strcpy (memoria[0].hour, "");
-        strcpy (memoria[0].text, "");
+        memoria[i].active = 0;
+        memoria[i].pid = 0;
+        memoria[i].magic_number = 0;
+        strcpy(memoria[i].date, "");
+        strcpy (memoria[i].hour, "");
+        strcpy (memoria[i].text, "");
     }   
 
     //Deberia estar lo de los semaforos (?)
