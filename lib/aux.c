@@ -1,25 +1,29 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <linux/limits.h>
+#include <unistd.h>
+#include <time.h>
+#include <string.h>
 
-
-/* Revisa si existe una carpeta, si no la crea. */
-int check_dir(char *path){
-  struct stat st = {0};
-  if (stat(path, &st) == -1)
-  {
-    mkdir(path, 0700);
-    printf("Se ha creado la carpeta: %s\n", path);
+/* Funcion para verificar la existencia de  una carpeta*/
+int check_dir(const char* path){
+  struct stat sb;
+  if (stat(path, &sb) == 0 && S_ISDIR(sb.st_mode)) {
     return 0;
-  }else{
-    printf("La carpeta ya existe :%s\n", path);
+  }else {
+    return 1;
+  }   
+}
+
+/*Funcion para crear una carpeta */
+int make_dir(const char* path){
+  if(mkdir(path, 0700) == -1){
     return 1;
   }
+  return 0;
 }
+
 
 /*Revisa si un string es un numero.*/
 int isNumber(char *text){
@@ -41,3 +45,4 @@ char *concat(const char *s1, const char *s2){
   strcat(result, s2);
   return result;
 }
+

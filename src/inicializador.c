@@ -40,10 +40,22 @@ int main(int argc, char *argv[]){
 
     //Creacion de directorios.
     char *dir = "buffers";
-    check_dir(dir);
+
+    if (check_dir(dir)){
+        if (make_dir(dir)){
+            printf("Error al crear carpeta: %s\n", dir);
+        }else
+            printf("Se ha creado la carpeta: %s\n", dir);
+    }
 
     char *dir_name = concat("buffers/", nameBuffer);
-    check_dir(dir_name);
+    
+    if (check_dir(dir_name)){
+        if (make_dir(dir_name)){
+            printf("Error al crear carpeta: %s\n", dir_name);
+        }else
+            printf("Se ha creado la carpeta: %s\n", dir_name);
+    }
 
     //Creacion de llaves.
     key_t key = ftok(dir_name, 's');
@@ -77,8 +89,12 @@ int main(int argc, char *argv[]){
     memoriaGlobal[0].end = 0;
 
     //Inicializacion de los Semaforos
-    int sem1;
-    sem1 = crearSem(dir_name, 33, 1, 1);
+    int semMem;
+    semMem = crearSem(dir_name, 1, 1, 1);
+    int semVacio;
+    semVacio = crearSem(dir_name, 2, 1, sizeBuffer);
+    int semLleno;
+    semLleno = crearSem(dir_name, 3, 1, 0);
 
     //Inicializacion de Memoria//
     

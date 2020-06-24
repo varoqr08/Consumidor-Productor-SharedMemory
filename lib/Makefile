@@ -33,7 +33,7 @@ $(AUX): $(OBJ_AUX)
 		$(MAKELIB) $(AUX) $(OBJ_AUX) && $(RANLIB) $(AUX)
 
 $(OBJ_AUX): $(SRC_AUX) $(INCLUDE_AUX)
-		$(CC) -c $(SRC_AUX)
+		$(CC) -c $(SRC_AUX) 
 
 
 $(MEM): $(OBJ_MEM)

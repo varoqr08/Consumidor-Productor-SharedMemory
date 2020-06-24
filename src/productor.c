@@ -13,6 +13,7 @@
 double ran_expo(double lambda);
 
 int main(int argc, char *argv[]){
+    
 
     //Validacion de argumentos
     if(argc != 3){
@@ -24,18 +25,56 @@ int main(int argc, char *argv[]){
     float time = atof(argv[2]);
 
     if(time <= 0){
-    printf("Media de tiempo Inválido.\n");
+    printf("Media de Tiempo Inválido.\n");
     exit(0);
     }
 
     printf("Nombre: %s \n", nameBuffer);
     printf("Tamano: %f \n", time);
 
-    printf("%f\n", ran_expo(0.05));
+    //Verificar la media de tiempo en segundos
+    if (!isNumber(argv[2])){
+        printf("Tamano de Buffer invalido. Debe ser un numero entero.\n");
+        exit(0);
+    }
+
+    printf("%f\n", ran_expo(time));
 
     /////////////////////////////////////////////////////////////////////////
 
+    //Creacion de la clave para el buffer
+    char * buffDir = concat("buffers/",argv[1]);
+    key_t bufferKey;
+    global_variables *variables = NULL;
+    message *buffer = NULL;
+    
+    if (check_dir(buffDir)) {
+        printf("El buffer no existe\n");
+        exit(0);
+    }else{
+        bufferKey =  ftok (buffDir, 's');
+        if (bufferKey == -1){
+            printf("Error al obtener la clave para la memoria compartida\n");
+            exit(0);
+            }
+    }
+
+    //Obtener variables globales
+    if (globalMemory(&variables)){
+        printf("Error al leer las variables globales\n");
+        exit(0);
+    }
+
+    //Memoria Compartida
+    int mem_id;
+    if (crearMemoria(&mem_id, bufferKey, variables[0].size, &buffer)){
+        printf("Error al obtener el buffer de memoria compartida.\n");
+        exit(0);
+    }
+
+
 }
+
 /*Generacion de números aleatorios a partir de una distribución exponencial
 Tomado de StackOverflow: Generating random numbers of exponential distribution
 */
