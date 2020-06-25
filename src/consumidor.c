@@ -116,14 +116,14 @@ int main(int argc, char *argv[]){
         printf("Espera de: %f \n",m);
         sleep(m);
 
-        bajarSem(semVacio,0);
+        subirSem(semVacio,0);
 
 
         //Entra en memoria compartida
         bajarSem(semMem, 0);        
         
 
-        writeMemory(i);
+        //readMemory(i); ???????????
 
 
         /*
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]){
 
         sleep(8);
         subirSem(semMem, 0);
-        subirSem(semLleno,0);
+        bajarSem(semLleno,0);
 
     }   
         
