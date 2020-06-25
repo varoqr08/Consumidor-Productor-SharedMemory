@@ -120,9 +120,8 @@ int abrirSem(char *buffer, int identifier, int sem_num) {
  * int num --> numero especifico del semaforo
  * Example: sem_up(sem1,0);
 */
-void verdeSem(int id, int num) {
+void subirSem(int id, int num) {
     struct sembuf operation;
-
     operation.sem_num = num;
     operation.sem_op = 1;
     semop(id, &operation, 1);
@@ -130,12 +129,11 @@ void verdeSem(int id, int num) {
 /**
  * Down operation 
  * int id --> id del set se semaforos
- * int num --> umero especifico del semaforo
+ * int num --> numero especifico del semaforo
  * Example: sem_down(sem1,0);
 */
-void rojoSem(int id, int num) {
+void bajarSem(int id, int num) {
     struct sembuf operation;
-
     operation.sem_num = num;
     operation.sem_op = -1;
     semop(id, &operation, 1);

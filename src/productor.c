@@ -9,8 +9,15 @@
 #include <aux.h>
 #include <mem.h>
 #include <math.h>
+#include <time.h>
+#include <sys/time.h>
 
 double ran_expo(double lambda);
+
+void writeMemory(int i);
+
+
+message *buffer = NULL;
 
 int main(int argc, char *argv[]){
     
@@ -46,7 +53,7 @@ int main(int argc, char *argv[]){
     char * buffDir = concat("buffers/",argv[1]);
     key_t bufferKey;
     global_variables *variables = NULL;
-    message *buffer = NULL;
+    
     
     if (check_dir(buffDir)) {
         printf("El buffer no existe\n");
@@ -83,25 +90,62 @@ int main(int argc, char *argv[]){
     printf("SemVAcio %i \n", semVacio);
     printf("SemMem %i \n", semMem);
 
-    borrarSem(semMem);
-    borrarSem(semVacio);
-    borrarSem(semLleno);
+    /*int semV = sem_get_value(semVacio, 0);
+    printf("Prueba %i \n", semV);
+
+    bajarSem(semVacio, 0);
+
+    int semV1 = sem_get_value(semVacio, 0);
+    printf("Prueba %i \n", semV1);
+*/
+    
 
 /* ipcs -s - Ver Semaforos */
 /* ipcrm -s 0 - Borrar Semaforo con id 0 */
 
 
-/*
-while(1){
-    float m = ran_expo(time);
-    printf("Espera de: %f \n",m);
-    sleep(m);
-    
 
-for(int i=1; i <=semVacio; i++){
-    borrarSem(i);
-}}*/
+    int i =0;
+    
+    while(1){
+        float m = ran_expo(time);
+        printf("Espera de: %f \n",m);
+        sleep(m);
+
+        bajarSem(semVacio,0);
+
+
+        //Entra en memoria compartida
+        bajarSem(semMem, 0);        
+        
+
+        //writeMemory(i);
+
+
+        /*
+        buffer[i].active = 0;
+        buffer[i].pid = 0;
+        buffer[i].magic_number = 0;
+        strcpy(buffer[i].date, "");
+        strcpy (buffer[i].hour, "");
+        strcpy (buffer[i].text, "Hola");
+        */
+        //printf("Se");
+
+        i++;
+
+        if(i == 10){
+            exit(0);
+        }
+
+        sleep(8);
+        subirSem(semMem, 0);
+        subirSem(semLleno,0);
+
+    }   
+        
 }
+
 
 /*Generacion de números aleatorios a partir de una distribución exponencial
 Tomado de StackOverflow: Generating random numbers of exponential distribution
@@ -110,4 +154,22 @@ double ran_expo(double lambda){
     double u;
     u = rand() / (RAND_MAX + 1.0);
     return -log(1- u) / lambda;
+}
+
+//void write_msg(int data1, int data2, char *data3, int index, struct sembuf operation, int id, message *memory, global_variables *memory2, int buffer_size){
+void writeMemory(int i){
+
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    char date[64];
+    strftime(date, sizeof(date), "%c", tm);
+
+    buffer[i].active = 1;
+    buffer[i].pid = getpid();
+    buffer[i].magic_number = rand() % 6;
+    strcpy(buffer[i].date, date);
+    strcpy (buffer[i].hour, "");
+    strcpy (buffer[i].text, "Hola");
+
+
 }

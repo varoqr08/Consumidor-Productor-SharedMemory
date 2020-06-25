@@ -88,12 +88,18 @@ int main(int argc, char *argv[]){
     memoriaGlobal[0].id = mem_id;
     memoriaGlobal[0].end = 0;
 
+    //Semaforos
+    int semMem, semVacio, semLleno;
+    
+    //Borrar los Semaforos
+    borrarSem(semMem);
+    borrarSem(semVacio);
+    borrarSem(semLleno);
+
     //Inicializacion de los Semaforos
-    int semMem;
+ 
     semMem = crearSem(dir_name, 1, 1, 1);
-    int semVacio;
     semVacio = crearSem(dir_name, 2, 1, sizeBuffer);
-    int semLleno;
     semLleno = crearSem(dir_name, 3, 1, 0);
 
     //Inicializacion de Memoria//
