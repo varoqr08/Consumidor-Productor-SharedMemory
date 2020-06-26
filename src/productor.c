@@ -14,9 +14,9 @@
 
 double ran_expo(double lambda);
 
-void writeMemory(int i);
+void writeMemory(int i, float m);
 
-void printMemory(int i, int magicNumber);
+void printMemory(int i, int magicNumber, float m);
 
 
 message *buffer = NULL;
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
     }
 
     char *nameBuffer = argv[1];
-    float time = atof(argv[2]);
+    float seconds = atof(argv[2]);
 
     if(time <= 0){
     printf("Media de Tiempo Inválido.\n");
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
     }
 
     printf("Nombre: %s \n", nameBuffer);
-    printf("Tiempo: %f \n", time);
+    printf("Tiempo: %f \n", seconds);
 
     //Verificar la media de tiempo en segundos
     if (!isNumber(argv[2])){
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
         exit(0);
     }
 
-    printf("%f\n", ran_expo(time));
+    printf("%f\n", ran_expo(seconds));
 
     /////////////////////////////////////////////////////////////////////////
 
@@ -112,9 +112,11 @@ int main(int argc, char *argv[]){
     int i =0;
     
     while(1){
-        float m = ran_expo(time);
-        printf("Espera de: %f \n",m);
+        float m = ran_expo(seconds);
         sleep(m);
+
+
+        //sleep(seconds);
 
         bajarSem(semVacio,0);
 
@@ -123,29 +125,20 @@ int main(int argc, char *argv[]){
         bajarSem(semMem, 0);        
         
 
-        writeMemory(i);
+        writeMemory(i, m);
 
+        int semV1 = sem_get_value(semVacio, 0);
+        printf("Espacios restantes: %i \n", semV1);
+        
 
-        /*
-        buffer[i].active = 0;
-        buffer[i].pid = 0;
-        buffer[i].magic_number = 0;
-        strcpy(buffer[i].date, "");
-        strcpy (buffer[i].hour, "");
-        strcpy (buffer[i].text, "Hola");
-        */
-        //printf("Se");
 
         i++;
 
-        if(i == 10){
-            exit(0);
-        }
-
-        sleep(8);
         subirSem(semMem, 0);
         subirSem(semLleno,0);
 
+
+        //printf("Espera de: %f \n",m);
     }   
         
 }
@@ -161,7 +154,7 @@ double ran_expo(double lambda){
 }
 
 //void write_msg(int data1, int data2, char *data3, int index, struct sembuf operation, int id, message *memory, global_variables *memory2, int buffer_size){
-void writeMemory(int i){
+void writeMemory(int i, float m){
 
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
@@ -178,10 +171,12 @@ void writeMemory(int i){
     strcpy (buffer[i].text, "Hola");
 
 
-    printMemory(i, magicNumber);
+    printMemory(i, magicNumber, m);
 }
 
-void printMemory(int i, int magicNumber){
+void printMemory(int i, int magicNumber, float m){
+    printf("\n");
+    printf("Espera de: %f \n",m);
     printf("\n");
     printf("Informacion de Mensaje en el espacio de memoria %i : \n", i);
     printf("Uso de la memoria: %i \n", buffer[i].active);
@@ -190,6 +185,8 @@ void printMemory(int i, int magicNumber){
     printf("Fecha y hora de creacion: %s \n", buffer[i].date);
     printf("Texto del mensaje: %s \n", buffer[i].text);
     printf("\n");
+
+    
 
 
 }
