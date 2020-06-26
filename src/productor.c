@@ -82,6 +82,9 @@ int main(int argc, char *argv[]){
         exit(0);
     }
 
+
+    variables[0].producers ++;
+
     //Abrir los semaforos
     char *dir_name = concat("buffers/", nameBuffer);
     int semMem, semVacio, semLleno;
@@ -129,6 +132,7 @@ int main(int argc, char *argv[]){
         printf("Espacios restantes: %i \n", semV1);
         
         variables[0].size ++;
+        variables[0].produced ++;
     
 
         subirSem(semMem, 0);
@@ -136,6 +140,7 @@ int main(int argc, char *argv[]){
 
 
         //printf("Espera de: %f \n",m);
+        sleep(1);
     }   
         
 }
@@ -156,7 +161,7 @@ void writeMemory(int i, float m){
     struct tm *tm = localtime(&t);
     char date[64];
     strftime(date, sizeof(date), "%c", tm);
-    int magicNumber = rand() % 6;
+    int magicNumber = rand() % 7;
 
     buffer[i].active = 1;
     buffer[i].pid = getpid();

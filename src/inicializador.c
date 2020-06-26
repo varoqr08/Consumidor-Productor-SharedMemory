@@ -83,10 +83,12 @@ int main(int argc, char *argv[]){
     }
 
     memoriaGlobal[0].producers = 0;
-    memoriaGlobal[0].consumers = 1;
+    memoriaGlobal[0].consumers = 0;
     memoriaGlobal[0].size = 0;
     memoriaGlobal[0].id = mem_id;
     memoriaGlobal[0].end = 0;
+    memoriaGlobal[0].consumed = 0;
+    memoriaGlobal[0].produced = 0;
 
     //Semaforos
     int semMem, semVacio, semLleno;

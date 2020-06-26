@@ -30,7 +30,7 @@ int crearMemoria(int *shmid, key_t key, int size, message **Memoria){
 /* Creacion de la memoria compartida para variables globales */
 int globalMemory(global_variables **memoria){
   int shmid;
-  key_t key = ftok ("/bin/ls", 33);
+  key_t key = ftok ("/bin", 33);
 	if (key == -1){
 		printf("Error en la clave de las variables globales\n");
 		return 1;

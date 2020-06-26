@@ -12,9 +12,11 @@
 #include <time.h>
 #include <sys/time.h>
 
-double ran_expo(double lambda);
+int factorial(int num);
 
-void writeMemory(int i, float m);
+double poisson(int k);
+
+void readMemory(int i, float m);
 
 void printMemory(int i, int magicNumber, float m);
 
@@ -46,8 +48,7 @@ int main(int argc, char *argv[]){
         exit(0);
     }
 
-    printf("%f\n", ran_expo(seconds));
-
+    
     /////////////////////////////////////////////////////////////////////////
 
     //Creacion de la clave para el buffer
@@ -80,6 +81,8 @@ int main(int argc, char *argv[]){
         exit(0);
     }
 
+    variables[0].consumers ++;
+    
     //Abrir los semaforos
     char *dir_name = concat("buffers/", nameBuffer);
     int semMem, semVacio, semLleno;
@@ -106,10 +109,20 @@ int main(int argc, char *argv[]){
 /* ipcs -s - Ver Semaforos */
  //ipcrm -s 0 - Borrar Semaforo con id 0 
 
-    //int i =0;
+    int cons = 1;
+    int tiempoEspera = 0;
+    int mediaTiempo = 0;
+    struct timeval t1, t2, t3, t4, start, end;
+
+    float p = abs(poisson(seconds));
+    printf("Poisson: %f \n", p);
+
+    printf("Pid = %i \n", getpid());
+    printf("Pid mod 6 = %i \n", (getpid()) % 6);
     
     while(1){
-        float m = ran_expo(seconds);
+        float m = abs(poisson(seconds));
+        tiempoEspera += m;
         sleep(m);
         
         bajarSem(semLleno,0);
@@ -118,36 +131,47 @@ int main(int argc, char *argv[]){
         //Entra en memoria compartida
         bajarSem(semMem, 0);        
         
-        printf("Consumo coca y luego picha.\n");
-        //Leer en Memoria//
-        //writeMemory(i, m);
+        //Leer de Memoria//
+        int id = (getpid() % 6);
+
+        variables[0].size --;
+        
+        if(id == buffer[variables[0].size].magic_number){
+            printf("El Magic Number Coincide con el PID modulo 6.\n");
+            printf("El proceso del Consumidor se va a cerrar.\n");
+            printf("Datos de interes:\n");
+            printf("Id del consumidor: %i \n", getpid());
+            printf("Acumulado de tiempos esperados: %i \n", tiempoEspera);
+
+            //variables[0].size --;
+            variables[0].consumed ++;
+            printf("Mensajes Totales Consumidos: %i \n" , variables[0].consumed);
+            printf("Mensajes Consumidos por este consumidor: %i \n" , cons);
+            
+
+            subirSem(semMem, 0);
+            subirSem(semVacio,0);
+
+            exit(0);
+        }
+        
+        //readMemory(variables[0].size, m);
 
         //int semV1 = sem_get_value(semVacio, 0);
         //printf("Espacios restantes: %i \n", semV1);
         
         //i++;
-
-        variables[0].size --;
-
-
+        cons ++;
+        variables[0].consumed ++;
         subirSem(semMem, 0);
         subirSem(semVacio,0);
-    }   
-        
+        sleep(1);
+    }  
 }
 
 
-/*Generacion de números aleatorios a partir de una distribución exponencial
-Tomado de StackOverflow: Generating random numbers of exponential distribution
-*/
-double ran_expo(double lambda){
-    double u;
-    u = rand() / (RAND_MAX + 1.0);
-    return -log(1- u) / lambda;
-}
-
-//void write_msg(int data1, int data2, char *data3, int index, struct sembuf operation, int id, message *memory, global_variables *memory2, int buffer_size){
-void writeMemory(int i, float m){
+    //void write_msg(int data1, int data2, char *data3, int index, struct sembuf operation, int id, message *memory, global_variables *memory2, int buffer_size){
+void readMemory(int i, float m){
 
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
@@ -155,6 +179,9 @@ void writeMemory(int i, float m){
     strftime(date, sizeof(date), "%c", tm);
     int magicNumber = rand() % 6;
 
+
+
+/*
     buffer[i].active = 1;
     buffer[i].pid = getpid();
     buffer[i].magic_number = magicNumber;
@@ -163,9 +190,30 @@ void writeMemory(int i, float m){
     strcpy (buffer[i].hour, "");
     strcpy (buffer[i].text, "Hola");
 
-
+*/
     printMemory(i, magicNumber, m);
+} 
+        
+
+
+/*Generacion de números aleatorios a partir de una distribución de poisson*/
+int factorial(int num){
+    int fact = 1;
+    for (int i = 1; i <= num; ++i){
+        fact = fact * i;
+    }
+    return fact;
 }
+
+double poisson(int k){
+    double e = 2.7182818284590452353602874713527;
+    double lamda = 1;
+    //printf("F: %d", factorial(k));
+    //return factorial(k); 
+    return pow(lamda, k) * pow(e,-lamda) / factorial(k);      
+}
+
+
 
 void printMemory(int i, int magicNumber, float m){
     printf("\n");
@@ -178,8 +226,5 @@ void printMemory(int i, int magicNumber, float m){
     printf("Fecha y hora de creacion: %s \n", buffer[i].date);
     printf("Texto del mensaje: %s \n", buffer[i].text);
     printf("\n");
-
-    
-
 
 }

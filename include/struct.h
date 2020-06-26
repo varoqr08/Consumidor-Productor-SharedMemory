@@ -10,6 +10,8 @@ typedef struct
   int size;
   int id;
   int end;
+  int consumed;
+  int produced;
 } global_variables;
 
 
