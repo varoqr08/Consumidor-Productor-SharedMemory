@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <aux.h>
 
 #include "../include/mem.h"
 
@@ -17,11 +18,11 @@
 */
 int crearMemoria(int *shmid, key_t key, int size, message **Memoria){
   if ((*shmid = shmget(key, sizeof(message)*size, 0777 | IPC_CREAT)) < 0) {
-    printf("Error de shmget() en el buffer\n");
+    printc("Error de shmget() en el buffer\n", 1);
     return 1;
    } 
    if ((*Memoria=( message *)shmat(*shmid, (char *)0, 0)) == (void *) -1) {
-    printf("Error de shmat() en el buffer\n");
+    printc("Error de shmat() en el buffer\n", 1);
     return 1;
    }
    return 0;
@@ -31,15 +32,15 @@ int crearMemoria(int *shmid, key_t key, int size, message **Memoria){
 int globalMemory(int *shmid, global_variables **memoria){
   key_t key = ftok ("/bin/ls", 33);
 	if (key == -1){
-		printf("Error en la clave de las variables globales\n");
+		printc("Error en la clave de las variables globales\n", 1);
 		return 1;
 	}
   if ((*shmid=shmget(key, sizeof(global_variables), 0777 | IPC_CREAT))<0) {
-    printf("Error de shmget() en el buffer de las variables globales\n");
+    printc("Error de shmget() en el buffer de las variables globales\n", 1);
     return 1;
    } 
    if ((*memoria=( global_variables *)shmat(*shmid, (char *)0, 0)) == (void *) -1) {
-    printf("Error de shmat() en el buffer de las variables globales\n");
+    printc("Error de shmat() en el buffer de las variables globales\n", 1);
     return 1;
    }
    return 0;

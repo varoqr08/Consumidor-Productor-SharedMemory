@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
 
     //Validacion de argumentos
     if(argc != 3){
-        printf("Numero incorrecto de argumentos. Introducir Nombre y Tiempo Medio\n");
+        printc("Numero incorrecto de argumentos. Introducir Nombre y Tiempo Medio\n", 1);
         exit(0);               
     }
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
     float seconds = atof(argv[2]);
 
     if(time <= 0){
-    printf("Media de Tiempo Inválido.\n");
+    printc("Media de Tiempo Inválido.\n", 1);
     exit(0);
     }
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
 
     //Verificar la media de tiempo en segundos
     if (!isNumber(argv[2])){
-        printf("Tamano de Buffer invalido. Debe ser un numero entero.\n");
+        printc("Tamano de Buffer invalido. Debe ser un numero entero.\n", 1);
         exit(0);
     }
 
@@ -59,12 +59,12 @@ int main(int argc, char *argv[]){
     
     
     if (check_dir(buffDir)) {
-        printf("El buffer no existe\n");
+        printc("El buffer no existe\n", 1);
         exit(0);
     }else{
         bufferKey =  ftok (buffDir, 's');
         if (bufferKey == -1){
-            printf("Error al obtener la clave para la memoria compartida\n");
+            printc("Error al obtener la clave para la memoria compartida\n", 1);
             exit(0);
             }
     }
@@ -72,14 +72,14 @@ int main(int argc, char *argv[]){
     //Obtener variables globales
     int id_gm = 0;
     if (globalMemory(&id_gm, &variables)){
-        printf("Error al leer las variables globales\n");
+        printc("Error al leer las variables globales\n", 1);
         exit(0);
     }
 
     //Memoria Compartida
     int mem_id;
     if (crearMemoria(&mem_id, bufferKey, variables[0].size, &buffer)){
-        printf("Error al obtener el buffer de memoria compartida.\n");
+        printc("Error al obtener el buffer de memoria compartida.\n", 1);
         exit(0);
     }
 

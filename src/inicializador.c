@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
 
     //Verifica que ingresen todos los argumentos esperados.
     if(argc != 3){
-        printf("Numero incorrecto de argumentos. Introducir Nombre y Tamaño del Buffer\n");
+        printc("Numero incorrecto de argumentos. Introducir Nombre y Tamaño del Buffer\n", 1);
         exit(0);
     }
     
@@ -24,13 +24,13 @@ int main(int argc, char *argv[]){
 
     //Verfica que el tamano del buffer sea un valor valido.
     if(sizeBuffer <= 0){
-        printf("Tamaño de Buffer invalido. Debe ser positivo y diferente de cero.\n");
+        printc("Tamaño de Buffer invalido. Debe ser positivo y diferente de cero.\n", 1);
         exit(0);
     }
 
     //Verifica que el tamaño del buffer sea un numero.
     if (!isNumber(argv[2])){
-        printf("Tamaño de Buffer invalido. Debe ser un numero entero.\n");
+        printc("Tamaño de Buffer invalido. Debe ser un numero entero.\n", 1);
         exit(0);
     }
 
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]){
     key_t key = ftok(dir_name, 's');
 
     if(key == -1){
-        printf("Error en la creacion de la llave");
+        printc("Error en la creacion de la llave", 1);
         exit(0);
     }
 
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
     int mem_id;
     message *memoria = NULL;
     if (crearMemoria(&mem_id, key, sizeBuffer, &memoria)){
-        printf("Error al crear la memoria");
+        printc("Error al crear la memoria", 1);
         exit(0);
     }else{
         printf("Se generó el buffer %s de tamaño %d correctamente\n", nameBuffer, sizeBuffer);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
     global_variables *memoriaGlobal = NULL;
     int id_gm = 0;
     if(globalMemory(&id_gm, &memoriaGlobal)){
-        printf("Error en variables globales.\n");
+        printc("Error en variables globales.\n", 1);
         exit(0);
     }
  

@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
     
     //Validacion de argumentos
     if(argc != 2){
-        printf("Numero incorrecto de argumentos. Introducir Nombre.\n");
+        printc("Numero incorrecto de argumentos. Introducir Nombre.\n", 1);
         exit(0);               
     }
 
@@ -33,12 +33,12 @@ int main(int argc, char *argv[]){
     
     
     if (check_dir(buffDir)) {
-        printf("El buffer no existe\n");
+        printc("El buffer no existe\n", 1);
         exit(0);
     }else{
         bufferKey =  ftok (buffDir, 's');
         if (bufferKey == -1){
-            printf("Error al obtener la clave para la memoria compartida\n");
+            printc("Error al obtener la clave para la memoria compartida\n", 1);
             exit(0);
             }
     }
@@ -46,14 +46,14 @@ int main(int argc, char *argv[]){
     //Obtener variables globales
     int id_gm = 0;
     if (globalMemory(&id_gm, &variables)){
-        printf("Error al leer las variables globales\n");
+        printc("Error al leer las variables globales\n", 1);
         exit(0);
     }
 
     //Memoria Compartida
     int mem_id;
     if (crearMemoria(&mem_id, bufferKey, variables[0].size, &buffer)){
-        printf("Error al obtener el buffer de memoria compartida.\n");
+        printc("Error al obtener el buffer de memoria compartida.\n", 1);
         exit(0);
     }
 
@@ -69,12 +69,12 @@ int main(int argc, char *argv[]){
 
     //Borrar Mem Global
     if(borrarMemoria(id_gm)){
-        printf("Error al borrar Memoria Global");
+        printc("Error al borrar Memoria Global", 1);
     }
 
     //Borrar Mem Buffers
     if(borrarMemoria(mem_id)){
-        printf("Error al borrar Memoria de Buffers");
+        printc("Error al borrar Memoria de Buffers", 1);
     }
 
     //Borrar los Semaforos
