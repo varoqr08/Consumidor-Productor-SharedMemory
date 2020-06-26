@@ -69,7 +69,8 @@ int main(int argc, char *argv[]){
     }
 
     //Obtener variables globales
-    if (globalMemory(&variables)){
+    int id_gm = 0;
+    if (globalMemory(&id_gm, &variables)){
         printf("Error al leer las variables globales\n");
         exit(0);
     }
@@ -145,6 +146,7 @@ int main(int argc, char *argv[]){
 
             //variables[0].size --;
             variables[0].consumed ++;
+            variables[0].key_deleted ++;
             printf("Mensajes Totales Consumidos: %i \n" , variables[0].consumed);
             printf("Mensajes Consumidos por este consumidor: %i \n" , cons);
             

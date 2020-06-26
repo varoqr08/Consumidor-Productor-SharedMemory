@@ -11,6 +11,7 @@
 /* Library to create and manage shared memory */
 
 int crearMemoria(int *shmid, key_t key, int size, message **Memoria);
-int globalMemory(global_variables **memoria);
+int globalMemory(int *shmid, global_variables **memoria);
+int borrarMemoria(int shmid);
 
 #endif

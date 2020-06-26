@@ -62,6 +62,14 @@ int crearSem(char *buffer, int identifier, int sem_num, int init_val) {
  * Funcion para borrar un semaforo
  * int id --> id del set de semaforos
 */
+void borrarSemIni(int id) {
+    semctl(id, 2, IPC_RMID, NULL);
+}
+
+/**
+ * Funcion para borrar un semaforo
+ * int id --> id del set de semaforos
+*/
 void borrarSem(int id) {
     semctl(id, 2, IPC_RMID, NULL);
     if (errno == EINVAL){

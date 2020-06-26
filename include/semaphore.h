@@ -5,6 +5,7 @@
 
 int crearSem(char *buffer, int identifier, int sem_num, int init_val);
 void borrarSem(int id);
+void borrarSemIni(int id);
 int abrirSem(char *buffer, int identifier, int sem_num);
 void subirSem(int id, int num);
 void bajarSem(int id, int num);

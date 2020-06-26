@@ -70,7 +70,8 @@ int main(int argc, char *argv[]){
     }
 
     //Obtener variables globales
-    if (globalMemory(&variables)){
+    int id_gm = 0;
+    if (globalMemory(&id_gm, &variables)){
         printf("Error al leer las variables globales\n");
         exit(0);
     }

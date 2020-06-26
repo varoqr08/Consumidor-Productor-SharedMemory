@@ -28,20 +28,27 @@ int crearMemoria(int *shmid, key_t key, int size, message **Memoria){
 }
 
 /* Creacion de la memoria compartida para variables globales */
-int globalMemory(global_variables **memoria){
-  int shmid;
-  key_t key = ftok ("/bin", 33);
+int globalMemory(int *shmid, global_variables **memoria){
+  key_t key = ftok ("/bin/ls", 33);
 	if (key == -1){
 		printf("Error en la clave de las variables globales\n");
 		return 1;
 	}
-  if ((shmid=shmget(key, sizeof(global_variables), 0777 | IPC_CREAT))<0) {
+  if ((*shmid=shmget(key, sizeof(global_variables), 0777 | IPC_CREAT))<0) {
     printf("Error de shmget() en el buffer de las variables globales\n");
     return 1;
    } 
-   if ((*memoria=( global_variables *)shmat(shmid, (char *)0, 0)) == (void *) -1) {
+   if ((*memoria=( global_variables *)shmat(*shmid, (char *)0, 0)) == (void *) -1) {
     printf("Error de shmat() en el buffer de las variables globales\n");
     return 1;
    }
    return 0;
+}
+
+/* Borrar Memoria: 1:error, 0:funciono */
+int borrarMemoria(int shmid){
+  if (shmctl(shmid, IPC_RMID, 0) < 0) {
+    return 1;
+  } else
+    return 0;
 }

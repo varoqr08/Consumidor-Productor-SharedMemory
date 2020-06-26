@@ -12,6 +12,7 @@ typedef struct
   int end;
   int consumed;
   int produced;
+  int key_deleted;
 } global_variables;
 
 

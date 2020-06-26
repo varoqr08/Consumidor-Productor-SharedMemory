@@ -26,12 +26,6 @@ int main(int argc, char *argv[]){
 
     printf("Nombre: %s \n", nameBuffer);
 
-    //Verificar la media de tiempo en segundos
-    if (!isNumber(argv[2])){
-        printf("Tamano de Buffer invalido. Debe ser un numero entero.\n");
-        exit(0);
-    }
-
     //Creacion de la clave para el buffer
     char * buffDir = concat("buffers/",argv[1]);
     key_t bufferKey;
@@ -50,7 +44,8 @@ int main(int argc, char *argv[]){
     }
 
     //Obtener variables globales
-    if (globalMemory(&variables)){
+    int id_gm = 0;
+    if (globalMemory(&id_gm, &variables)){
         printf("Error al leer las variables globales\n");
         exit(0);
     }
@@ -62,21 +57,50 @@ int main(int argc, char *argv[]){
         exit(0);
     }
 
-    variables[0].end = 1;
-
-    
     //Abrir los semaforos
     char *dir_name = concat("buffers/", nameBuffer);
     int semMem, semVacio, semLleno;
     semMem = abrirSem(dir_name, 1, 1);
     semVacio = abrirSem(dir_name, 2, 1);
     semLleno = abrirSem(dir_name, 3, 1);
- 
+
+    //Levantar Bandera para cerrar productores y consumidores
+    variables[0].end = 1;
+
+    //Borrar Mem Global
+    if(borrarMemoria(id_gm)){
+        printf("Error al borrar Memoria Global");
+    }
+
+    //Borrar Mem Buffers
+    if(borrarMemoria(mem_id)){
+        printf("Error al borrar Memoria de Buffers");
+    }
+
     //Borrar los Semaforos
     borrarSem(semMem);
     borrarSem(semVacio);
     borrarSem(semLleno);
 
+    //Borrar las Carpetas Creadas
+    if (!check_dir("buffers/")){
+        system("rm -rf buffers");
+        printf("Se eliminaron con exito los buffers\n");
+    }
+    
+
+    //MOSTRAR UN MONTON DE INFO XD
+    printf("Total de Mensajes Producidos:  %i \n", variables[0].produced);
+    //Mensajes en el Buffer
+    printf("Total de Productores:  %i \n", variables[0].producers);
+    printf("Total de Consumidores:  %i \n", variables[0].consumers);
+    printf("Total de Consumidores Eliminados con una Key:  %i \n", variables[0].key_deleted);
+    //Tiempo de Usuario Final
+    //Tiempo bloqueado Total
+    //Tiempo de Kernel Total
+
+    
+    return 0;
 
 }
 
