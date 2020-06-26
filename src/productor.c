@@ -21,6 +21,7 @@ void printMemory(int i, int magicNumber, float m);
 
 message *buffer = NULL;
 
+
 int main(int argc, char *argv[]){
     
 
@@ -107,14 +108,10 @@ int main(int argc, char *argv[]){
 /* ipcs -s - Ver Semaforos */
  //ipcrm -s 0 - Borrar Semaforo con id 0 
 
-
-
-    int i =0;
     
     while(1){
         float m = ran_expo(seconds);
         sleep(m);
-
 
         //sleep(seconds);
 
@@ -125,14 +122,14 @@ int main(int argc, char *argv[]){
         bajarSem(semMem, 0);        
         
 
-        writeMemory(i, m);
+        writeMemory(variables[0].size, m);
+        //printf("Prodzco coca y luego picha.\n");
 
         int semV1 = sem_get_value(semVacio, 0);
         printf("Espacios restantes: %i \n", semV1);
         
-
-
-        i++;
+        variables[0].size ++;
+    
 
         subirSem(semMem, 0);
         subirSem(semLleno,0);
@@ -142,7 +139,6 @@ int main(int argc, char *argv[]){
     }   
         
 }
-
 
 /*Generacion de números aleatorios a partir de una distribución exponencial
 Tomado de StackOverflow: Generating random numbers of exponential distribution
