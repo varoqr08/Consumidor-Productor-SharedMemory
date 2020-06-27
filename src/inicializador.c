@@ -44,6 +44,7 @@ int main(int argc, char *argv[]){
             printf("Se ha creado la carpeta: %s\n", dir);
     }
 
+
     char *dir_name = concat("buffers/", nameBuffer);
     
     if (check_dir(dir_name)){
@@ -51,6 +52,18 @@ int main(int argc, char *argv[]){
             printf("Error al crear carpeta: %s\n", dir_name);
         }else
             printf("Se ha creado la carpeta: %s\n", dir_name);
+    }else{
+        printc("El Nombre de Buffer seleccionado ya existe\n", 1);
+        exit(0);
+    }
+
+    
+    //Creacion de buffer LS
+    if (check_dir("buffers/ls")){
+        if (make_dir("buffers/ls")){
+            printf("Error al crear carpeta: %s\n", "buffers/ls");
+        }else
+            printf("Se ha creado la carpeta: %s\n", "buffers/ls");
     }
 
     //Creacion de llaves.
