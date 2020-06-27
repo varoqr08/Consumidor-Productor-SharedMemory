@@ -18,9 +18,12 @@ void writeMemory(int i, float m);
 
 void printMemory(int i, int magicNumber, float m);
 
+void endProducer(float tiempo, int msg, float bloq, float wait);
+
 
 message *buffer = NULL;
-
+global_variables *variables = NULL;
+struct timeval t1, t2, t3, t4, start, end;
 
 int main(int argc, char *argv[]){
     
@@ -39,23 +42,19 @@ int main(int argc, char *argv[]){
     exit(0);
     }
 
-    printf("Nombre: %s \n", nameBuffer);
-    printf("Tiempo: %f \n", seconds);
 
     //Verificar la media de tiempo en segundos
     if (!isNumber(argv[2])){
-        printc("Tamano de Buffer invalido. Debe ser un numero entero.\n", 1);
+        printc("Media de tiempo invalida. Debe ser un numero entero.\n", 1);
         exit(0);
     }
-
-    printf("%f\n", ran_expo(seconds));
 
     /////////////////////////////////////////////////////////////////////////
 
     //Creacion de la clave para el buffer
     char * buffDir = concat("buffers/",argv[1]);
     key_t bufferKey;
-    global_variables *variables = NULL;
+    
     
     
     if (check_dir(buffDir)) {
@@ -82,7 +81,13 @@ int main(int argc, char *argv[]){
         printc("Error al obtener el buffer de memoria compartida.\n", 1);
         exit(0);
     }
+/////////////////////////////////////////////////////////////////////////////////////
 
+    printf("Nombre: %s \n", nameBuffer);
+    printf("Tiempo medio en segundos: %f \n", seconds);
+
+
+    float bloq, wait;
 
     variables[0].producers ++;
 
@@ -97,37 +102,34 @@ int main(int argc, char *argv[]){
     printf("SemVAcio %i \n", semVacio);
     printf("SemMem %i \n", semMem);
 
-    //writeMemory(1);
-    //writeMemory(2);
-    /*int semV = sem_get_value(semVacio, 0);
-    printf("Prueba %i \n", semV);
-
-    bajarSem(semVacio, 0);
-
-    int semV1 = sem_get_value(semVacio, 0);
-    printf("Prueba %i \n", semV1);
-*/
-    
-
-/* ipcs -s - Ver Semaforos */
- //ipcrm -s 0 - Borrar Semaforo con id 0 
-
+    int msg = 0;
+    gettimeofday(&start, NULL); //inicia el contador de tiempo
     
     while(1){
+
+        if(variables[0].end == -1){
+            gettimeofday(&end, NULL);
+            double tiempo = (end.tv_sec - start.tv_sec);
+            variables[0].totalKernel += (end.tv_sec - start.tv_sec);
+            endProducer(tiempo, msg, bloq, wait);
+        }
+
+
         float m = ran_expo(seconds);
         sleep(m);
 
-        //sleep(seconds);
-
+        //Disminuye el valor de memoria en que se puede escribir. Si ya no hay espacio, se bloquea el productor
+        gettimeofday(&t3, NULL);
         bajarSem(semVacio,0);
-
-
+        gettimeofday(&t4, NULL);
+      
         //Entra en memoria compartida
-        bajarSem(semMem, 0);        
+        gettimeofday(&t1, NULL);
+        bajarSem(semMem, 0); 
+        gettimeofday(&t2, NULL);       
         
 
         writeMemory(variables[0].size, m);
-        //printf("Prodzco coca y luego picha.\n");
 
         int semV1 = sem_get_value(semVacio, 0);
         printf("Espacios restantes: %i \n", semV1);
@@ -135,13 +137,20 @@ int main(int argc, char *argv[]){
         variables[0].size ++;
         variables[0].produced ++;
     
-
+        //Permite acceder nuevamente a memoria compartida
         subirSem(semMem, 0);
+
+        //Permite la entrada de consumidores, ya existe algo para consumir.
         subirSem(semLleno,0);
 
+        bloq += (t2.tv_sec - t1.tv_sec);
+        wait += (t4.tv_sec - t3.tv_sec);
 
-        //printf("Espera de: %f \n",m);
-        sleep(1);
+        variables[0].totalBloq += (t2.tv_sec - t1.tv_sec);
+        variables[0].totalWait += (t4.tv_sec - t3.tv_sec);
+
+
+        msg ++;
     }   
         
 }
@@ -180,15 +189,31 @@ void printMemory(int i, int magicNumber, float m){
     printf("\n");
     printf("Espera de: %f \n",m);
     printf("\n");
-    printf("Informacion de Mensaje en el espacio de memoria %i : \n", i);
+    printf("Productores Activos: %i \n", variables[0].producers);
+    printf("Consumidores Activos: %i \n", variables[0].consumers);
+    printf("-- Escrito en el espacio de memoria %i --\n", i);
+    printf("Contenido del mensaje escrito: \n");
     printf("Uso de la memoria: %i \n", buffer[i].active);
-    printf("Pid: %i \n", buffer[i].pid);
+    printf("Pid del productor creador: %i \n", buffer[i].pid);
     printf("Valor de Magic Number asociado: %i \n", buffer[i].magic_number);
     printf("Fecha y hora de creacion: %s \n", buffer[i].date);
     printf("Texto del mensaje: %s \n", buffer[i].text);
     printf("\n");
 
-    
+}
 
-
+void endProducer(float tiempo, int msg, float bloq, float wait){
+    variables[0].producers -= 1;
+    printf("\n");
+    printf("Solicitud del Finalizador Recibida. \n");
+    printf("Productor Finalizado. \n");
+    printf("\n");
+    printf("Resumen de actividad: \n");
+    printf("Pid del Productor: %i \n", getpid());
+    printf("Mensajes Producidos por este Productor: %i \n", msg);
+    printf("Mensajes Totales Producidos: %i \n", variables[0].produced);
+    printf("Tiempo en espera: %f \n", wait);
+    printf("Tiempo en bloqueo: %f \n",bloq);
+    printf("Tiempo total activo: %f \n",tiempo);
+    exit(0);
 }

@@ -34,10 +34,6 @@ int main(int argc, char *argv[]){
         exit(0);
     }
 
-    //Imprime argumentos validos en consola.
-    printf("Nombre: %s \n", nameBuffer);
-    printf("Tamaño: %i \n", sizeBuffer);
-
     //Creacion de directorios.
     char *dir = "buffers";
 
@@ -61,7 +57,7 @@ int main(int argc, char *argv[]){
     key_t key = ftok(dir_name, 's');
 
     if(key == -1){
-        printc("Error en la creacion de la llave", 1);
+        printc("Error en la creacion de la llave \n", 1);
         exit(0);
     }
 
@@ -69,11 +65,17 @@ int main(int argc, char *argv[]){
     int mem_id;
     message *memoria = NULL;
     if (crearMemoria(&mem_id, key, sizeBuffer, &memoria)){
-        printc("Error al crear la memoria", 1);
+        printc("Error al crear la memoria \n", 1);
         exit(0);
     }else{
         printf("Se generó el buffer %s de tamaño %d correctamente\n", nameBuffer, sizeBuffer);
     }
+
+
+    //Imprime argumentos validos en consola.
+    printf("Nombre: %s \n", nameBuffer);
+    printf("Tamaño: %i \n", sizeBuffer);
+
 
     //Creacion de memoria para variables globales.
     global_variables *memoriaGlobal = NULL;
@@ -91,6 +93,10 @@ int main(int argc, char *argv[]){
     memoriaGlobal[0].consumed = 0;
     memoriaGlobal[0].produced = 0;
     memoriaGlobal[0].key_deleted = 0;
+    memoriaGlobal[0].totalWait = 0;
+    memoriaGlobal[0].totalBloq = 0;
+    memoriaGlobal[0].totalUser = 0;
+    memoriaGlobal[0].totalKernel = 0;
 
     //Semaforos
     int semMem, semVacio, semLleno;

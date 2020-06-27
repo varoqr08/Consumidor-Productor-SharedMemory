@@ -10,6 +10,10 @@ typedef struct
   int size;
   int id;
   int end;
+  float totalWait;
+  float totalBloq;
+  float totalUser;
+  float totalKernel;
   int consumed;
   int produced;
   int key_deleted;

@@ -18,7 +18,7 @@ int main(int argc, char *argv[]){
     
     //Validacion de argumentos
     if(argc != 2){
-        printc("Numero incorrecto de argumentos. Introducir Nombre.\n", 1);
+        printc("Numero incorrecto de argumentos. Introducir Nombre del buffer a finalizar.\n", 1);
         exit(0);               
     }
 
@@ -87,17 +87,23 @@ int main(int argc, char *argv[]){
         system("rm -rf buffers");
         printf("Se eliminaron con exito los buffers\n");
     }
-    
 
+    //Envia la variable para finalizar todos los procesos
+    variables[0].end = -1;
+    sleep(2);
     //MOSTRAR UN MONTON DE INFO XD
     printf("Total de Mensajes Producidos:  %i \n", variables[0].produced);
     //Mensajes en el Buffer
     printf("Total de Productores:  %i \n", variables[0].producers);
     printf("Total de Consumidores:  %i \n", variables[0].consumers);
     printf("Total de Consumidores Eliminados con una Key:  %i \n", variables[0].key_deleted);
+    printf("Tiempo total en estado de Espera: %f \n", variables[0].totalWait);
     //Tiempo de Usuario Final
+    printf("Tiempo total en estado de Usuario: %f \n", variables[0].totalUser);
     //Tiempo bloqueado Total
+    printf("Tiempo total en estado de bloqueo: %f \n", variables[0].totalBloq);
     //Tiempo de Kernel Total
+    printf("Tiempo total del Kernel: %f \n", variables[0].totalKernel);
 
     
     return 0;
