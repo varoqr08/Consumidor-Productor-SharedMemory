@@ -103,7 +103,7 @@ int main(int argc, char *argv[]){
         if(modo == 1){
            printf("Modo de operacion: Automatico. \n");
         }else{
-            printf("Modo Invalido. Ingrese 0 para Manual o 1 para Automatico. \n");
+            printc("Modo Invalido. Ingrese 0 para Manual o 1 para Automatico. \n", 1);
             exit(0);
         }
     }

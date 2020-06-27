@@ -86,9 +86,9 @@ int main(int argc, char *argv[]){
     borrarSem(semVacio);
     borrarSem(semLleno);
 
-    //Borrar las Carpetas Creadas
-    if (!check_dir("buffers/")){
-        system("rm -rf buffers");
+    //Borrar la Carpeta Creada
+    if (!check_dir(dir_name)){
+        system(concat("rm -rf ", dir_name));
         printf("Se eliminaron con exito los buffers\n");
     }
 
