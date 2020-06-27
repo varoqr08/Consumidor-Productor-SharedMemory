@@ -91,6 +91,7 @@ int main(int argc, char *argv[]){
     }
 
     variables[0].consumers ++;
+    variables[0].totalConsumers ++;
 
 ///////////////////////////////////////////////////////////////////////////////////////
     printf("Nombre: %s \n", nameBuffer);
@@ -102,7 +103,7 @@ int main(int argc, char *argv[]){
         if(modo == 1){
            printf("Modo de operacion: Automatico. \n");
         }else{
-            printc("Modo Invalido. Ingrese 0 para Manual o 1 para Automatico. \n", 1);
+            printf("Modo Invalido. Ingrese 0 para Manual o 1 para Automatico. \n");
             exit(0);
         }
     }

@@ -90,6 +90,7 @@ int main(int argc, char *argv[]){
     float bloq, wait;
 
     variables[0].producers ++;
+    variables[0].endFinalizer = 1;
 
     //Abrir los semaforos
     char *dir_name = concat("buffers/", nameBuffer);
@@ -106,25 +107,26 @@ int main(int argc, char *argv[]){
     gettimeofday(&start, NULL); //inicia el contador de tiempo
     
     while(1){
+        float m = ran_expo(seconds);
+        sleep(m);
+
+        //Disminuye el valor de memoria en que se puede escribir. Si ya no hay espacio, se bloquea el productor
+        gettimeofday(&t1, NULL);
+        gettimeofday(&t3, NULL);
+        bajarSem(semVacio,0);
+        gettimeofday(&t4, NULL);
 
         if(variables[0].end == -1){
             gettimeofday(&end, NULL);
             double tiempo = (end.tv_sec - start.tv_sec);
             variables[0].totalKernel += (end.tv_sec - start.tv_sec);
+            variables[0].endFinalizer = 0;
             endProducer(tiempo, msg, bloq, wait);
         }
 
-
-        float m = ran_expo(seconds);
-        sleep(m);
-
-        //Disminuye el valor de memoria en que se puede escribir. Si ya no hay espacio, se bloquea el productor
-        gettimeofday(&t3, NULL);
-        bajarSem(semVacio,0);
-        gettimeofday(&t4, NULL);
       
         //Entra en memoria compartida
-        gettimeofday(&t1, NULL);
+        
         bajarSem(semMem, 0); 
         gettimeofday(&t2, NULL);       
         
@@ -132,7 +134,8 @@ int main(int argc, char *argv[]){
         writeMemory(variables[0].size, m);
 
         int semV1 = sem_get_value(semVacio, 0);
-        printf("Espacios restantes: %i \n", semV1);
+     
+        printf("Espacios vacios restantes: %i \n", semV1);
         
         variables[0].size ++;
         variables[0].produced ++;
@@ -177,8 +180,6 @@ void writeMemory(int i, float m){
     buffer[i].pid = getpid();
     buffer[i].magic_number = magicNumber;
     strcpy(buffer[i].date, date);
-    //Recordar a Mau que se puede poner fecha y hora en uno solo. Borrar el atributo hour.
-    strcpy (buffer[i].hour, "");
     strcpy (buffer[i].text, "Hola");
 
 
@@ -203,7 +204,6 @@ void printMemory(int i, int magicNumber, float m){
 }
 
 void endProducer(float tiempo, int msg, float bloq, float wait){
-    variables[0].producers -= 1;
     printf("\n");
     printf("Solicitud del Finalizador Recibida. \n");
     printf("Productor Finalizado. \n");

@@ -13,6 +13,9 @@
 #include <sys/time.h>
 
 message *buffer = NULL;
+global_variables *variables = NULL;
+
+void printFinalizer();
 
 int main(int argc, char *argv[]){
     
@@ -24,12 +27,12 @@ int main(int argc, char *argv[]){
 
     char *nameBuffer = argv[1];
 
-    printf("Nombre: %s \n", nameBuffer);
+    printf("Nombre del buffer a cerrar: %s \n", nameBuffer);
 
     //Creacion de la clave para el buffer
     char * buffDir = concat("buffers/",argv[1]);
     key_t bufferKey;
-    global_variables *variables = NULL;
+    
     
     
     if (check_dir(buffDir)) {
@@ -65,7 +68,8 @@ int main(int argc, char *argv[]){
     semLleno = abrirSem(dir_name, 3, 1);
 
     //Levantar Bandera para cerrar productores y consumidores
-    variables[0].end = 1;
+    variables[0].end = -1;
+    //sleep(2);
 
     //Borrar Mem Global
     if(borrarMemoria(id_gm)){
@@ -82,20 +86,29 @@ int main(int argc, char *argv[]){
     borrarSem(semVacio);
     borrarSem(semLleno);
 
-    //Borrar la Carpeta Creada
-    if (!check_dir(dir_name)){
-        system(concat("rm -rf ", dir_name));
+    //Borrar las Carpetas Creadas
+    if (!check_dir("buffers/")){
+        system("rm -rf buffers");
         printf("Se eliminaron con exito los buffers\n");
     }
 
-    //Envia la variable para finalizar todos los procesos
-    variables[0].end = -1;
-    sleep(2);
+    while(1){
+        if (variables[0].endFinalizer == 0){
+            printFinalizer();
+        }
+    }
+    
+    return 0;
+
+}
+
+void printFinalizer(){
     //MOSTRAR UN MONTON DE INFO XD
+    printf("\n");
     printf("Total de Mensajes Producidos:  %i \n", variables[0].produced);
     //Mensajes en el Buffer
     printf("Total de Productores:  %i \n", variables[0].producers);
-    printf("Total de Consumidores:  %i \n", variables[0].consumers);
+    printf("Total de Consumidores:  %i \n", variables[0].totalConsumers);
     printf("Total de Consumidores Eliminados con una Key:  %i \n", variables[0].key_deleted);
     printf("Tiempo total en estado de Espera: %f \n", variables[0].totalWait);
     //Tiempo de Usuario Final
@@ -104,13 +117,8 @@ int main(int argc, char *argv[]){
     printf("Tiempo total en estado de bloqueo: %f \n", variables[0].totalBloq);
     //Tiempo de Kernel Total
     printf("Tiempo total del Kernel: %f \n", variables[0].totalKernel);
-
-    
-    return 0;
-
+    exit(0);
 }
-
-
 
 
 

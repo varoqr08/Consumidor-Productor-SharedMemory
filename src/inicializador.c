@@ -110,6 +110,8 @@ int main(int argc, char *argv[]){
     memoriaGlobal[0].totalBloq = 0;
     memoriaGlobal[0].totalUser = 0;
     memoriaGlobal[0].totalKernel = 0;
+    memoriaGlobal[0].totalConsumers = 0;
+    memoriaGlobal[0].endFinalizer = 0;
 
     //Semaforos
     int semMem, semVacio, semLleno;
@@ -132,7 +134,6 @@ int main(int argc, char *argv[]){
         memoria[i].pid = 0;
         memoria[i].magic_number = 0;
         strcpy(memoria[i].date, "");
-        strcpy (memoria[i].hour, "");
         strcpy (memoria[i].text, "");
     }   
 

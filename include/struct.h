@@ -14,9 +14,11 @@ typedef struct
   float totalBloq;
   float totalUser;
   float totalKernel;
+  int totalConsumers;
   int consumed;
   int produced;
   int key_deleted;
+  int endFinalizer;
 } global_variables;
 
 
@@ -27,7 +29,6 @@ typedef struct
   int pid;
   int magic_number;
   char date[50];
-  char hour[50];
   char text[50];
 } message;
 
