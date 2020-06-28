@@ -136,13 +136,17 @@ int main(int argc, char *argv[]){
 
     while(1){
 
+        if(!modo){
+            printc("Precione la tecla Enter para consumir\n", 3);
+            getchar();
+        }
+
         if(variables[0].end == -1){
             gettimeofday(&end, NULL);
             float userTime = (end.tv_sec - start.tv_sec);
             variables[0].totalUser += (end.tv_sec - start.tv_sec);
             endConsumer(userTime);
         }
-        
         
         
         float m = abs(poisson(seconds));
