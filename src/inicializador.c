@@ -11,6 +11,8 @@
 
 int main(int argc, char *argv[]){
 
+    printc("------------------------------------------ \n", 2);
+    printc("INICIALIZADOR \n", 3);
     /*Validacion de argumentos*/
 
     //Verifica que ingresen todos los argumentos esperados.
@@ -86,8 +88,11 @@ int main(int argc, char *argv[]){
 
 
     //Imprime argumentos validos en consola.
-    printf("Nombre: %s \n", nameBuffer);
-    printf("Tamaño: %i \n", sizeBuffer);
+    printc("Nombre: ", 3);
+    printf("%s \n", nameBuffer);
+    printc("Tamaño: ", 3);
+    printf( "%i \n", sizeBuffer);
+    printc("------------------------------------------ \n", 2);
 
 
     //Creacion de memoria para variables globales.

@@ -83,8 +83,13 @@ int main(int argc, char *argv[]){
     }
 /////////////////////////////////////////////////////////////////////////////////////
 
-    printf("Nombre: %s \n", nameBuffer);
-    printf("Tiempo medio en segundos: %f \n", seconds);
+    printc("------------------------------------------ \n", 2);
+    printc("PRODUCTOR\n",5);
+    printc("Nombre: ",5);
+    printf("%s \n", nameBuffer);
+    printc("Tiempo medio en segundos: ", 5);
+    printf("%f \n", seconds);
+    printc("------------------------------------------ \n", 2);
 
 
     float bloq, wait;
@@ -99,14 +104,15 @@ int main(int argc, char *argv[]){
     semVacio = abrirSem(dir_name, 2, 1);
     semLleno = abrirSem(dir_name, 3, 1);
 
-    printf("SemLleno %i \n", semLleno);
-    printf("SemVAcio %i \n", semVacio);
-    printf("SemMem %i \n", semMem);
+    //printf("SemLleno %i \n", semLleno);
+    //printf("SemVAcio %i \n", semVacio);
+    //printf("SemMem %i \n", semMem);
 
     int msg = 0;
     gettimeofday(&start, NULL); //inicia el contador de tiempo
     
     while(1){
+        printc("------------------------------------------ \n", 4);
         float m = ran_expo(seconds);
         sleep(m);
 
@@ -192,12 +198,21 @@ void printMemory(int i, int magicNumber, float m){
     printf("\n");
     printf("Productores Activos: %i \n", variables[0].producers);
     printf("Consumidores Activos: %i \n", variables[0].consumers);
-    printf("-- Escrito en el espacio de memoria %i --\n", i);
+    printf("\n");
+    printc("-- Escrito en el espacio de memoria: ",5);
+    printf("%i ", i);
+    printc("--\n", 5);
+    printf("\n");
     printf("Contenido del mensaje escrito: \n");
+    printc("-> ",5);
     printf("Uso de la memoria: %i \n", buffer[i].active);
+    printc("-> ",5);
     printf("Pid del productor creador: %i \n", buffer[i].pid);
+    printc("-> ",5);
     printf("Valor de Magic Number asociado: %i \n", buffer[i].magic_number);
+    printc("-> ",5);
     printf("Fecha y hora de creacion: %s \n", buffer[i].date);
+    printc("-> ",5);
     printf("Texto del mensaje: %s \n", buffer[i].text);
     printf("\n");
 
@@ -205,15 +220,21 @@ void printMemory(int i, int magicNumber, float m){
 
 void endProducer(float tiempo, int msg, float bloq, float wait){
     printf("\n");
-    printf("Solicitud del Finalizador Recibida. \n");
-    printf("Productor Finalizado. \n");
+    printc("Solicitud del Finalizador recibida!! \n", 1);
     printf("\n");
+    printc("---Productor Finalizado---\n",5);
     printf("Resumen de actividad: \n");
+    printc("-> ",2);
     printf("Pid del Productor: %i \n", getpid());
+    printc("-> ",2);
     printf("Mensajes Producidos por este Productor: %i \n", msg);
+    printc("-> ",2);
     printf("Mensajes Totales Producidos: %i \n", variables[0].produced);
+    printc("-> ",2);
     printf("Tiempo en espera: %f \n", wait);
+    printc("-> ",2);
     printf("Tiempo en bloqueo: %f \n",bloq);
+    printc("-> ",2);
     printf("Tiempo total activo: %f \n",tiempo);
     exit(0);
 }

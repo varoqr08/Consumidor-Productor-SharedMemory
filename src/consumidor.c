@@ -16,7 +16,7 @@ int factorial(int num);
 
 double poisson(int k);
 
-void readMemory(int i, float m);
+void readMemory(int i, float m, int n);
 
 void printTimes(float waitTime, float userTime);
 
@@ -94,21 +94,25 @@ int main(int argc, char *argv[]){
     variables[0].totalConsumers ++;
 
 ///////////////////////////////////////////////////////////////////////////////////////
-    printf("Nombre: %s \n", nameBuffer);
-    printf("Tiempo Medio en Segundos: %f \n", seconds);
+    printc("------------------------------------------ \n", 2);
+    printc("CONSUMIDOR\n",5);
+    printc("Nombre: ",5);
+    printf("%s \n", nameBuffer);
+    printc("Tiempo Medio en Segundos: ", 5);
+    printf("%f \n", seconds);
+    
     
     if(modo == 0){
-        printf("Modo de operacion: Manual. \n");
+        printc("Modo de operacion: Manual. \n", 5);
     }else{
         if(modo == 1){
-           printf("Modo de operacion: Automatico. \n");
+           printc("Modo de operacion: Automatico. \n", 5);
         }else{
             printc("Modo Invalido. Ingrese 0 para Manual o 1 para Automatico. \n", 1);
             exit(0);
         }
     }
-
-
+    
     
     //Abrir los semaforos
     char *dir_name = concat("buffers/", nameBuffer);
@@ -122,20 +126,25 @@ int main(int argc, char *argv[]){
     //printf("SemMem %i \n", semMem);
 
     int cons = 1;
+    int n = 1;
     float tiempoEspera;
     struct timeval t1, t2, t3, t4, start, end;
 
     float p = abs(poisson(seconds));
-    printf("Poisson: %f \n", p);
+    //printf("Poisson: %f \n", p);
 
-    printf("Pid = %i \n", getpid());
-    printf("Pid mod 6 = %i \n", (getpid()) % 6);
+    printc("Pid  del Consumidor = ",5);
+    printf("%i \n", getpid());
+    printc("Pid mod 6 = ", 5);
+    printf("%i \n", (getpid()) % 6);
+
+    printc("------------------------------------------ \n", 2);
     
 
     gettimeofday(&start, NULL);
 
     while(1){
-
+        printc("------------------------------------------ \n", 4);
         if(!modo){
             printc("Precione la tecla Enter para consumir\n", 3);
             getchar();
@@ -172,20 +181,27 @@ int main(int argc, char *argv[]){
         tiempoEspera += (t4.tv_sec - t3.tv_sec);
         
         if(id == buffer[variables[0].size].magic_number){
-            readMemory(variables[0].size, m);
+            n = 3;
+            readMemory(variables[0].size, m, n);
             gettimeofday(&end, NULL);
             float tiempoUsuario = (end.tv_sec - start.tv_sec);
             variables[0].totalUser += (end.tv_sec - start.tv_sec);
             printf("\n");
-            printf("El Magic Number Coincide con el PID modulo 6.\n");
-            printf("El proceso del Consumidor se va a cerrar.\n");
+            printc("El Magic Number Coincide con el PID modulo 6!!\n", 1);
+            printf("\n");
+            printc("Consumidor Finalizado.\n", 5);
+            printf("\n");
             printf("Datos de interes:\n");
+            printc("-> ",5);
             printf("Id del consumidor: %i \n", getpid());
+            printc("-> ",5);
             printTimes(tiempoEspera,tiempoUsuario);
             variables[0].consumed ++;
             variables[0].consumers --;
             variables[0].key_deleted ++;
+            printc("-> ",5);
             printf("Mensajes Totales Consumidos: %i \n" , variables[0].consumed);
+            printc("-> ",5);
             printf("Mensajes Consumidos por este consumidor: %i \n" , cons);
             
             //Permite que se acceda nuevamente a memoria compartida
@@ -197,7 +213,7 @@ int main(int argc, char *argv[]){
             exit(0);
         }
         
-        readMemory(variables[0].size, m);
+        readMemory(variables[0].size, m, n);
 
         //Cantidad de mensajes consumidos por este consumidor
         cons ++;
@@ -214,18 +230,28 @@ int main(int argc, char *argv[]){
 
 
     //void write_msg(int data1, int data2, char *data3, int index, struct sembuf operation, int id, message *memory, global_variables *memory2, int buffer_size){
-void readMemory(int i, float m){
+void readMemory(int i, float m, int n){
     printf("\n");
     printf("Espera de: %f \n",m);
     printf("\n");
+    printc("-> ",2);
     printf("Productores Activos: %i \n", variables[0].producers);
+    printc("-> ",2);
     printf("Consumidores Activos: %i \n", variables[0].consumers);
-    printf("---Leido del Bloque de memoria # %i --- \n", i);
+    printc("-> ",2);
+    printf("Leido del Bloque de memoria # %i \n", i);
+    printc("-> ",2);
     printf("Contenido del mensaje leido: \n");
+    printc("-> ",2);
     printf("Uso de la memoria: %i \n", buffer[i].active);
+    printc("-> ",2);
     printf("Pid del productor creador: %i \n", buffer[i].pid);
-    printf("Valor de Magic Number asociado: %i \n", buffer[i].magic_number);
+    printc("-> ",2);
+    printf("Valor de Magic Number asociado: %i", buffer[i].magic_number);
+    printc("<- \n",n);
+    printc("-> ",2);
     printf("Fecha y hora de creacion: %s \n", buffer[i].date);
+    printc("-> ",2);
     printf("Texto del mensaje: %s \n", buffer[i].text);
     printf("\n");
 
@@ -252,13 +278,16 @@ double poisson(int k){
 
 void printTimes(float waitTime, float userTime){
     printf("Tiempo de Espera: %f \n", waitTime);
+    printc("-> ",5);
     printf("Tiempo de Usuario: %f \n", userTime);
 }
 
 void endConsumer(float userTime){
     printf("\n");
-    printf("Solicitud del Finalizador Recibida. \n");
-    printf("Consumidor Finalizado. \n");
+    printc("Solicitud del Finalizador Recibida!! \n",1);
+    printf("\n");
+    printc("---Consumidor Finalizado--- \n", 5);
+    printc("-> ",2);
     printf("Tiempo de Usuario: %f  \n", userTime);
     exit(0);
 }
